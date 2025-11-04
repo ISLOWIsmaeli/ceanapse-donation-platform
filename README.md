@@ -37,7 +37,7 @@ A secure and user-friendly web platform that enables supporters to make monetary
 
 1. **Clone the repository**
 ```bash
-   git clone https://github.com/your-org/ceanapse-donation-platform.git
+   git clone https://github.com/ISLOWIsmaeli/ceanapse-donation-platform.git
    cd ceanapse-donation-platform
 ```
 
@@ -169,4 +169,4 @@ This project is proprietary and confidential. All rights reserved by CEANAPSE.
 
 ---
 
-**Built with ❤️ by the CEANAPSE Development Team**
+**Built with ❤️ by the KIJIJI Development Team**
