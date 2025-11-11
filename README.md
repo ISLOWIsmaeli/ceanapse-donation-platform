@@ -88,11 +88,12 @@ ceanapse-donation-platform/
 └── manage.py            # Django management script
 ```
 
-## 📚 Documentation
+## 📚 Documentation (IGNORE FOR NOW WILL UPDATE WITH TIME)
 
 - [Setup Guide](docs/SETUP.md) - Detailed development environment setup
 - [API Documentation](docs/API.md) - API endpoints and usage
 - [Deployment Guide](docs/DEPLOYMENT.md) - Production deployment instructions
+- [SpoonFeeding Guide](docs/spoonFeeding.md) - Baby steps instructions
 
 ## 🔄 Git Workflow
 
