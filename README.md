@@ -80,20 +80,20 @@ A secure and user-friendly web platform that enables supporters to make monetary
 ```
 ceanapse-donation-platform/
 ├── config/              # Django project settings
+    ├── templates/           # Django HTML templates
+    ├── static/              # Static files (CSS, JS, images) 
 ├── donations/           # Donations app (models, views, payment logic)
 ├── administration/      # Admin customization and dashboard
-├── frontend/            # HTML/CSS/JS templates and assets
-├── templates/           # Django HTML templates
-├── static/              # Static files (CSS, JS, images)
-├── docs/                # Project documentation
+├── docs/                # Project documentation (please ignore for now)
 └── manage.py            # Django management script
 ```
 
-## 📚 Documentation
+## 📚 Documentation (IGNORE FOR NOW WILL UPDATE WITH TIME)
 
 - [Setup Guide](docs/SETUP.md) - Detailed development environment setup
 - [API Documentation](docs/API.md) - API endpoints and usage
 - [Deployment Guide](docs/DEPLOYMENT.md) - Production deployment instructions
+- [SpoonFeeding Guide](docs/spoonFeeding.md) - Baby steps instructions
 
 ## 🔄 Git Workflow
 
