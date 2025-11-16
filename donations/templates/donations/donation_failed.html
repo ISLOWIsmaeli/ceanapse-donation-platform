@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Failed | Ceanapse{% endblock %}
+
+{% block content %}
+<section class="response-section response-section--error">
+  <div class="response-container">
+    <div class="response-icon response-icon--error">
+      <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+        <circle class="error-icon__circle" cx="26" cy="26" r="25" fill="none"/>
+        <path class="error-icon__line error-icon__line--left" d="M16 16 36 36 M36 16 16 36" stroke-linecap="round"/>
+      </svg>
+    </div>
+    
+    <div class="response-content">
+      <h1 class="response-title">Payment Failed</h1>
+      <p class="response-subtitle">We couldn't process your donation</p>
+      
+      <p class="response-message response-message--error">
+        {{ error_message|default:"Unfortunately, your payment could not be processed. This could be due to insufficient funds, card issues, or network problems." }}
+      </p>
+      
+      {% if reference %}
+      <div class="response-details">
+        <div class="response-detail">
+          <span class="response-detail-label">Transaction Reference:</span>
+          <span class="response-detail-value">{{ reference }}</span>
+        </div>
+      </div>
+      {% endif %}
+      
+      <div class="response-help">
+        <p class="response-help-title">What can you do?</p>
+        <ul class="response-help-list">
+          <li>Check that your card has sufficient funds</li>
+          <li>Verify your card details are correct</li>
+          <li>Try using a different payment method</li>
+          <li>Contact your bank if the issue persists</li>
+        </ul>
+      </div>
+      
+      <div class="response-actions">
+        <a href="{% url 'donations:donation_form' %}" class="btn btn--primary">
+          Try Again
+        </a>
+        <a href="{% url 'donations:ocean_community' %}" class="btn btn--secondary">
+          Back to Home
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Trigger animations on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const icon = document.querySelector('.response-icon');
+    const content = document.querySelector('.response-content');
+    
+    // Animate icon with shake
+    setTimeout(() => {
+      icon.classList.add('animate');
+    }, 100);
+    
+    // Animate content
+    setTimeout(() => {
+      content.classList.add('animate');
+    }, 300);
+  });
+</script>
+{% endblock %}
+
