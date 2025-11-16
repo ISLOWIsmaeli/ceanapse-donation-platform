@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Thank You | Ceanapse{% endblock %}
+
+{% block content %}
+<section class="response-section response-section--success">
+  <div class="response-container">
+    <div class="response-icon response-icon--success">
+      <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+        <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+      </svg>
+    </div>
+    
+    <div class="response-content">
+      <h1 class="response-title">Thank You!</h1>
+      <p class="response-subtitle">Your donation has been received successfully</p>
+      
+      {% if donor_name %}
+      <p class="response-greeting">Dear {{ donor_name }},</p>
+      {% endif %}
+      
+      <p class="response-message">
+        Your generous contribution helps us protect the ocean and support 
+        marine conservation efforts. We truly appreciate your support!
+      </p>
+      
+      {% if reference %}
+      <div class="response-details">
+        <div class="response-detail">
+          <span class="response-detail-label">Transaction Reference:</span>
+          <span class="response-detail-value">{{ reference }}</span>
+        </div>
+        {% if amount %}
+        <div class="response-detail">
+          <span class="response-detail-label">Amount:</span>
+          <span class="response-detail-value">KES {{ amount }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+      
+      <div class="response-actions">
+        <a href="{% url 'donations:ocean_community' %}" class="btn btn--primary">
+          Back to Home
+        </a>
+        <a href="{% url 'donations:donation_form' %}" class="btn btn--secondary">
+          Make Another Donation
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Trigger animations on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const icon = document.querySelector('.response-icon');
+    const content = document.querySelector('.response-content');
+    
+    // Animate icon
+    setTimeout(() => {
+      icon.classList.add('animate');
+    }, 100);
+    
+    // Animate content
+    setTimeout(() => {
+      content.classList.add('animate');
+    }, 300);
+  });
+</script>
+{% endblock %}
+
