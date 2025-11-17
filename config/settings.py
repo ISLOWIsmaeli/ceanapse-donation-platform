@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,11 @@ SECRET_KEY = "django-insecure-q5&is25t^lm^c4(lf*e-#p3$%g5=c6nuhh7f@-6d0yf4eco+dc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://unsooty-flavoressly-marisha.ngrok-free.dev'
+]
 
 
 # Application definition
@@ -40,6 +45,7 @@ INSTALLED_APPS = [
     #installed apps
     "administration.apps.AdministrationConfig",
     "donations.apps.DonationsConfig",
+    "projects.apps.ProjectsConfig",
 ]
 
 MIDDLEWARE = [
@@ -107,11 +113,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Africa/Nairobi"
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -124,3 +130,4 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')

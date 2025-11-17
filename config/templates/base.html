@@ -4,29 +4,33 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}Ceanapse{% endblock %}</title>
+    <title>
+      {% block title %}
+        {{ page_title|default:"Ceanapse"  }}
+      {% endblock %}
+    </title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="{% static 'styles/ocean_community.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/ceanapse.css' %}" />
     {% block extra_head %}{% endblock %}
   </head>
   <body>
     <nav class="navbar">
       <div class="navbar__container">
-        <a href="{% url 'donations:ocean_community' %}" class="navbar__logo" aria-label="Ceanapse Home">
+        <a href="{% url 'projects:ceanapse-home' %}" class="navbar__logo" aria-label="Ceanapse Home">
           <img src="{% static 'images/Regenerative Blue Economy BG.svg' %}" alt="Ceanapse Logo" class="navbar__logo-img" />
           <span class="navbar__brand">Ceanapse</span>
         </a>
         <ul class="navbar__menu">
-          <li><a href="{% url 'donations:ocean_community' %}" class="navbar__link">Home</a></li>
-          <li><a href="{% url 'donations:ocean_community' %}#mission" class="navbar__link">About</a></li>
-          <li><a href="{% url 'donations:ocean_community' %}#leadership" class="navbar__link">Leadership</a></li>
-          <li><a href="{% url 'donations:ocean_community' %}#impact" class="navbar__link">Impact</a></li>
-          <li><a href="{% url 'donations:ocean_community' %}#projects" class="navbar__link">Projects</a></li>
+          <li><a href="{% url 'projects:ceanapse-home' %}" class="navbar__link">Home</a></li>
+          <li><a href="{% url 'projects:ceanapse-home' %}#mission" class="navbar__link">About</a></li>
+          <li><a href="{% url 'projects:ceanapse-home' %}#leadership" class="navbar__link">Leadership</a></li>
+          <li><a href="{% url 'projects:ceanapse-home' %}#impact" class="navbar__link">Impact</a></li>
+          <li><a href="{% url 'projects:ceanapse-home' %}#projects" class="navbar__link">Projects</a></li>
         </ul>
       </div>
     </nav>

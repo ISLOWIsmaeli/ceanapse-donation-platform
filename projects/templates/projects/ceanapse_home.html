@@ -239,30 +239,14 @@
 <section id="projects" class="projects" aria-labelledby="projects-heading">
   <h2 id="projects-heading" class="section-heading">Featured Projects</h2>
   <div class="projects__grid">
+    {% for i in projects %}
     <article class="project-card">
       <div class="project-card__icon" aria-hidden="true">✓</div>
-      <h3 class="project-card__title">Coral Reef Restoration</h3>
-      <p class="project-card__description">
-        Help restore coral reefs by funding coral planting dives.
-      </p>
-      <a class="project-card__cta" href="{% url 'donations:donation_form' %}">Donate</a>
+      <h3 class="project-card__title">{{i.name}}</h3>
+        <p class="project-card__description">{{i.description}}</p> 
+        <a class="project-card__cta" href="{% url 'donations:donation' i.id %}">Donate</a>       
     </article>
-    <article class="project-card">
-      <div class="project-card__icon" aria-hidden="true">✓</div>
-      <h3 class="project-card__title">Plastic Cleanup Kit</h3>
-      <p class="project-card__description">
-        Support beach cleanups by supplying volunteers with an essential kit.
-      </p>
-      <a class="project-card__cta" href="{% url 'donations:donation_form' %}">Donate</a>
-    </article>
-    <article class="project-card">
-      <div class="project-card__icon" aria-hidden="true">✓</div>
-      <h3 class="project-card__title">Mangrove Planting</h3>
-      <p class="project-card__description">
-        Plant mangroves to protect coastlines and slow erosion.
-      </p>
-      <a class="project-card__cta" href="{% url 'donations:donation_form' %}">Donate</a>
-    </article>
+    {% endfor %}
   </div>
 </section>
 {% endblock %}

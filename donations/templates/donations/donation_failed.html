@@ -20,11 +20,11 @@
         {{ error_message|default:"Unfortunately, your payment could not be processed. This could be due to insufficient funds, card issues, or network problems." }}
       </p>
       
-      {% if reference %}
+      {% if donation_id %}
       <div class="response-details">
         <div class="response-detail">
           <span class="response-detail-label">Transaction Reference:</span>
-          <span class="response-detail-value">{{ reference }}</span>
+          <span class="response-detail-value">{{ donation_id }}</span>
         </div>
       </div>
       {% endif %}
@@ -43,7 +43,7 @@
         <a href="{% url 'donations:donation_form' %}" class="btn btn--primary">
           Try Again
         </a>
-        <a href="{% url 'donations:ocean_community' %}" class="btn btn--secondary">
+        <a href="{% url 'projects:ceanapse-home' %}" class="btn btn--secondary">
           Back to Home
         </a>
       </div>
