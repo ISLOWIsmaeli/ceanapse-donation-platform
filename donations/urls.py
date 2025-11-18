@@ -3,7 +3,7 @@ from django.urls import path
 from . import views
 
 app_name = "donations"
-# app_name = "donations"
+
 
 urlpatterns = [
     path("donation/<int:donation_id>/", views.donation_checkout, name="donation"),
