@@ -113,7 +113,7 @@ def create_paystack_checkout_session(request, project_id):
           return redirect(check_out_session_url_or_error_message)
       else:
           messages.error(request, check_out_session_url_or_error_message)
-          return redirect('donation')
+          return redirect('donations:donation',donation_id=project_id)
   # GET: render form to enter amount
   return render(request, 'donations/donation_checkout_form.html', {'project': project})
 
