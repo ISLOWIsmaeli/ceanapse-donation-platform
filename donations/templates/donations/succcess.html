@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Donation Successful</title>
+</head>
+<body>
+    <h1>Thank You for Your Donation!</h1>
+    
+    {% if success %}
+        <p style="color: green; font-size: 18px;">
+            ✓ Your donation has been successfully processed.
+        </p>
+        
+        <h2>Donation Details</h2>
+        <table border="1" cellpadding="10">
+            <tr>
+                <td><strong>Donor Name:</strong></td>
+                <td>{{ donation.donor_full_name }}</td>
+            </tr>
+            <tr>
+                <td><strong>Email:</strong></td>
+                <td>{{ donation.donor_email }}</td>
+            </tr>
+            <tr>
+                <td><strong>Amount:</strong></td>
+                <td>₦{{ donation.amount|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td><strong>Reference:</strong></td>
+                <td>{{ donation.reference }}</td>
+            </tr>
+            <tr>
+                <td><strong>Date:</strong></td>
+                <td>{{ donation.created_at|date:"F d, Y - h:i A" }}</td>
+            </tr>
+        </table>
+        
+        <p>A confirmation email will be sent to {{ donation.donor_email }}</p>
+    {% else %}
+        <p style="color: red;">There was an issue processing your donation.</p>
+    {% endif %}
+    
+    <p>
+        <a href="{% url 'home' %}">← Back to Home</a> |
+        <a href="{% url 'donations-list' %}">View All Donations</a>
+    </p>
+</body>
+</html>

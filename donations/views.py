@@ -46,7 +46,7 @@ def donation_success(request, project_id):
       'donor_name': donor_name
   })
 
-@login_required
+# no need to login 
 def donation_failed(request, project_id):
 
   project = Project.objects.get(id=project_id)
@@ -67,7 +67,7 @@ def donation_failed(request, project_id):
       'donation_id': donation_id
   })
 
-@login_required
+
 def create_paystack_checkout_session(request, project_id):
   project = Project.objects.get(id=project_id)
 

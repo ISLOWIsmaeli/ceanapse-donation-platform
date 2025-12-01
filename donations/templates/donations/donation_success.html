@@ -17,7 +17,9 @@
       <p class="response-subtitle">Your donation has been received successfully</p>
       
       {% if donor_name %}
-      <p class="response-greeting">Dear {{ donor_name }},</p>
+        <p class="response-greeting">Dear {{ donor_name }},</p>
+      {% else %}
+        <p class="response-greeting">Dear User,</p>
       {% endif %}
       
       <p class="response-message">
