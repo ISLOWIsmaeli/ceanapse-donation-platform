@@ -8,8 +8,3 @@ def ceanapse_home(request):
     "projects": projects,
   }
   return render(request, "projects/ceanapse_home.html", context)
-
-# list of projects
-def project_list(request):
-    projects = Project.objects.all()
-    return render(request, "projects/project_list.html", {"projects": projects})
