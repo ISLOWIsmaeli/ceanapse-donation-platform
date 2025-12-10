@@ -16,7 +16,9 @@
       <h1 class="response-title">Thank You!</h1>
       <p class="response-subtitle">Your donation has been received successfully</p>
       
-      {% if donor_name %}
+      {% if is_anonymous %}
+      <p class="response-greeting">Thank you for giving anonymously.</p>
+      {% elif donor_name %}
       <p class="response-greeting">Dear {{ donor_name }},</p>
       {% endif %}
       

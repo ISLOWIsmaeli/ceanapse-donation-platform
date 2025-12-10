@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 import uuid
 from django.urls import reverse
@@ -10,20 +10,28 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import hmac
 import hashlib
-from django.conf import settings
 import json
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
 from decimal import Decimal, InvalidOperation
+from django.conf import settings
+
+
+def _donation_limits():
+  min_amount = Decimal(str(getattr(settings, "DONATION_MIN_AMOUNT", 100)))
+  max_amount = Decimal(str(getattr(settings, "DONATION_MAX_AMOUNT", 1000000)))
+  return min_amount, max_amount
 
 def donation_checkout(request, donation_id):
   project = Project.objects.get(id=donation_id)
+  min_amount, max_amount = _donation_limits()
   context = {
     "project": project,
+    "min_amount": min_amount,
+    "max_amount": max_amount,
   }
   return render(request, "donations/donation_checkout_form.html", context)
 
-@login_required
+
 def donation_success(request, project_id):
 
   project = Project.objects.get(id=project_id)
@@ -37,16 +45,18 @@ def donation_success(request, project_id):
   
   amount = donation.amount if donation else None
   donation_id = donation.donation_id if donation else None
-  donor_name = request.user.get_full_name() or request.user.username
+  is_anonymous = donation.is_anonymous if donation else False
+  donor_name = None if is_anonymous else (request.user.get_full_name() or request.user.username)
 
   return render(request, 'donations/donation_success.html', {
       'project': project,
       'amount': amount,
       'donation_id': donation_id,
-      'donor_name': donor_name
+      'donor_name': donor_name,
+      'is_anonymous': is_anonymous,
   })
 
-@login_required
+
 def donation_failed(request, project_id):
 
   project = Project.objects.get(id=project_id)
@@ -67,9 +77,10 @@ def donation_failed(request, project_id):
       'donation_id': donation_id
   })
 
-@login_required
+
 def create_paystack_checkout_session(request, project_id):
   project = Project.objects.get(id=project_id)
+  min_amount, max_amount = _donation_limits()
 
   if request.method == "POST":
       amount_text = request.POST.get("amount")
@@ -77,12 +88,16 @@ def create_paystack_checkout_session(request, project_id):
           amount = Decimal(amount_text)
       except (InvalidOperation, TypeError):
           messages.error(request, "Enter a valid numeric amount.")
-          return redirect('donation', donation_id=project_id)
+          return redirect('donations:donation', donation_id=project_id)
 
-      # validate min/max
-      if amount <= 0:
-          messages.error(request, "Amount must be greater than zero.")
-          return redirect('donation', donation_id=project_id)
+      is_anonymous = request.POST.get("is_anonymous", "false") == "true"
+
+      if amount < min_amount or amount > max_amount:
+          messages.error(
+              request,
+              f"Please enter an amount between KES {min_amount:,.0f} and KES {max_amount:,.0f}.",
+          )
+          return redirect('donations:donation', donation_id=project_id)
       
       purchase_id = f"purchase_{uuid.uuid4()}"
       # /donation-success/2/
@@ -103,6 +118,7 @@ def create_paystack_checkout_session(request, project_id):
           "product_id": project.id,
           "user_id": request.user.id,
           "purchase_id": purchase_id,
+          "is_anonymous": is_anonymous,
       },
       "label": f"Checkout For {project.name}"
       }
@@ -113,9 +129,9 @@ def create_paystack_checkout_session(request, project_id):
           return redirect(check_out_session_url_or_error_message)
       else:
           messages.error(request, check_out_session_url_or_error_message)
-          return redirect('donations:donation',donation_id=project_id)
+          return redirect('donations:donation', donation_id=project_id)
   # GET: render form to enter amount
-  return render(request, 'donations/donation_checkout_form.html', {'project': project})
+  return render(request, 'donations/donation_checkout_form.html', {'project': project, 'min_amount': min_amount, 'max_amount': max_amount})
 
 @csrf_exempt
 def paystack_webhook(request):
@@ -139,12 +155,17 @@ def paystack_webhook(request):
 
             user = User.objects.get(id=user_id)
 
+            is_anonymous = metadata.get("is_anonymous", False)
+            if isinstance(is_anonymous, str):
+                is_anonymous = is_anonymous.lower() == "true"
+
             DonationHistory.objects.create(
                 donation_id = purchase_id,
                 user = user,
                 donation_status = True,
                 project = Project.objects.get(id=product_id),
-                amount = amount_paid
+                amount = amount_paid,
+                is_anonymous = is_anonymous
             )
 
             #send email to user on successful payment

@@ -9,6 +9,7 @@
         {{ page_title|default:"Ceanapse"  }}
       {% endblock %}
     </title>
+    <link rel="icon" href="{% static 'images/Regenerative Blue Economy BG.svg' %}" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -35,28 +36,6 @@
       </div>
     </nav>
     <main>{% block content %}{% endblock %}</main>
-    <footer class="footer">
-      <div class="footer__container">
-        <div class="footer__content">
-          <div class="footer__section">
-            <h3 class="footer__heading">Founded By</h3>
-            <ul class="footer__founders">
-              <li class="footer__founder">
-                <span class="footer__founder-name">Magak Adell</span>
-                <span class="footer__founder-role">Founder and Member Advisory (Physical Oceanography and Marine Science)</span>
-              </li>
-              <li class="footer__founder">
-                <span class="footer__founder-name">Allyllah Esther</span>
-                <span class="footer__founder-role">Co-Founder and Member Advisory (Community Engagement and Impact)</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="footer__copyright">
-          <p>&copy; {% now "Y" %} Ceanapse. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>
     {% block extra_scripts %}{% endblock %}
   </body>
 </html>
