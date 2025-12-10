@@ -6,7 +6,7 @@
 <body>
     <h1>All Donations</h1>
     
-    <p><a href="{% url 'home' %}">← Back to Home</a></p>
+    <p><a href="#">← Back to Home</a></p>
     
     <h2>Summary</h2>
     <ul>
@@ -44,6 +44,7 @@
         <p>No donations have been made yet.</p>
     {% endif %}
     
-    <p><a href="{% url 'home' %}">Make a Donation</a></p>
+    <p><a href="#">Make a Donation</a></p>
 </body>
 </html>
+{% comment %} Is it essential to have this page? I think paystack can handle tis {% endcomment %}

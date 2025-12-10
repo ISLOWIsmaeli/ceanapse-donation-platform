@@ -152,3 +152,7 @@ def paystack_webhook(request):
 
     return HttpResponse(status=200)
 
+def render_test(request):
+   
+   return render(request, "donations/failed.html")
+   
