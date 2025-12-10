@@ -23,7 +23,7 @@ def donation_checkout(request, donation_id):
   }
   return render(request, "donations/donation_checkout_form.html", context)
 
-@login_required
+@login_required # I propose donation success to be for everyone and we filter it at the templates level
 def donation_success(request, project_id):
 
   project = Project.objects.get(id=project_id)
