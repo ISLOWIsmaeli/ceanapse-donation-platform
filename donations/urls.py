@@ -11,5 +11,4 @@ urlpatterns = [
     path('donation-failed/<int:project_id>/', views.donation_failed, name='donation-failed'),
     path('checkout/<int:project_id>/', views.create_paystack_checkout_session, name='donation-checkout'),
     path('webhook/paystack/', views.paystack_webhook),
-    path('rendertest/', views.render_test, name="render-test"),
 ]
