@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Make a Donation</title>
+</head>
+<body>
+    <h1>Support Our Cause</h1>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
+                {{ message }}
+            </p>
+        {% endfor %}
+    {% endif %}
+    
+    <h2>Make a Donation</h2>
+    <form method="post">
+        {% csrf_token %}
+        
+        <p>
+            <label for="{{ form.donor_full_name.id_for_label }}">{{ form.donor_full_name.label }}:</label><br>
+            {{ form.donor_full_name }}
+        </p>
+        
+        <p>
+            <label for="{{ form.donor_email.id_for_label }}">{{ form.donor_email.label }}:</label><br>
+            {{ form.donor_email }}
+        </p>
+        
+        <p>
+            <label for="{{ form.amount.id_for_label }}">{{ form.amount.label }}:</label><br>
+            {{ form.amount }}
+        </p>
+        
+        {% if form.errors %}
+            <p style="color: red;">
+                Please correct the errors below:
+                {{ form.errors }}
+            </p>
+        {% endif %}
+        
+        <p>
+            <button type="submit">Proceed to Payment</button>
+        </p>
+    </form>
+    
+    <hr>
+    
+    <h2>Impact Summary</h2>
+    <p><strong>Total Raised:</strong> ₦{{ total_raised|floatformat:2 }}</p>
+    
+    <h3>Recent Donations</h3>
+    {% if recent_donations %}
+        <ul>
+            {% for donation in recent_donations %}
+                <li>
+                    {{ donation.donor_full_name }} donated ₦{{ donation.amount|floatformat:2 }}
+                    - {{ donation.created_at|date:"M d, Y" }}
+                </li>
+            {% endfor %}
+        </ul>
+        <p><a href="#">View all donations</a></p>
+    {% else %}
+        <p>No donations yet. Be the first to donate!</p>
+    {% endif %}
+</body>
+</html>

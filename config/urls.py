@@ -25,4 +25,6 @@ urlpatterns = [
     path("donations/", include("donations.urls")),
     path("projects/", include("projects.urls")),
     path("admin-panel/", include("administration.urls")),
+    path("", include("projects.urls")),
+    path("administration/", include("administration.urls")),
 ]

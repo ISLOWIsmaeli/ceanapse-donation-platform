@@ -31,7 +31,7 @@ def donation_checkout(request, donation_id):
   }
   return render(request, "donations/donation_checkout_form.html", context)
 
-
+@login_required # I propose donation success to be for everyone and we filter it at the templates level
 def donation_success(request, project_id):
 
   project = Project.objects.get(id=project_id)
@@ -56,7 +56,7 @@ def donation_success(request, project_id):
       'is_anonymous': is_anonymous,
   })
 
-
+# no need to login 
 def donation_failed(request, project_id):
 
   project = Project.objects.get(id=project_id)
@@ -173,3 +173,4 @@ def paystack_webhook(request):
 
     return HttpResponse(status=200)
 
+   
