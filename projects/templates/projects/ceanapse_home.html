@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Ocean Community | Ceanapse{% endblock %}
 
@@ -98,62 +99,72 @@
   <p class="leadership__intro">
     Our organization comprises three founders and ten members forming the external advisory board. The leadership efforts are strongly supported by a committed team of professionals who ensure the community's needs are met as a top priority.
   </p>
-  
+
   <div class="leadership__container">
     <h3 class="leadership__subheading">Founders</h3>
     <div class="leadership__grid leadership__grid--founders">
       <article class="leader-card">
         <div class="leader-card__avatar">
-          <span class="leader-card__initials">MA</span>
+          <img src="{% static 'images/Regenerative Blue Economy BG.svg' %}" alt="Magak Adell" class="leader-card__image" />
         </div>
         <h4 class="leader-card__name">Magak Adell</h4>
         <p class="leader-card__role">Founder and Member Advisory</p>
         <p class="leader-card__expertise">Physical Oceanography and Marine Science</p>
       </article>
+
       <article class="leader-card">
         <div class="leader-card__avatar">
-          <span class="leader-card__initials">AE</span>
+          <img src="{% static 'images/Regenerative Blue Economy BG.svg' %}" alt="Allyllah Esther" class="leader-card__image" />
         </div>
         <h4 class="leader-card__name">Allyllah Esther</h4>
         <p class="leader-card__role">Co-Founder and Member Advisory</p>
         <p class="leader-card__expertise">Community Engagement and Impact</p>
       </article>
     </div>
-    
+
     <h3 class="leadership__subheading">Advisory Board & Team</h3>
     <div class="leadership__grid">
+
+      <!-- Dr. Lydia Olaka -->
       <article class="leader-card">
         <div class="leader-card__avatar">
-          <span class="leader-card__initials">LO</span>
+          <img src="{% static 'images/Olaka.jpeg' %}" alt="Dr. Lydia Olaka" class="leader-card__image">
         </div>
         <h4 class="leader-card__name">Dr. Lydia Olaka</h4>
         <p class="leader-card__role">Member Advisory</p>
         <p class="leader-card__expertise">Geosciences</p>
       </article>
+
+      <!-- Geoffrey Magak -->
       <article class="leader-card">
         <div class="leader-card__avatar">
-          <span class="leader-card__initials">GM</span>
+          <img src="{% static 'images/Magak.jpeg' %}" alt="Geoffrey Magak" class="leader-card__image">
         </div>
         <h4 class="leader-card__name">Geoffrey Magak</h4>
         <p class="leader-card__role">Member Advisory</p>
         <p class="leader-card__expertise">Monitoring and Evaluation</p>
       </article>
+
+      <!-- Dr. Gorringe Patrick -->
       <article class="leader-card">
         <div class="leader-card__avatar">
-          <span class="leader-card__initials">GP</span>
+          <img src="{% static 'images/Gorringe.jpeg' %}" alt="Dr. Gorringe Patrick" class="leader-card__image">
         </div>
         <h4 class="leader-card__name">Dr. Gorringe Patrick</h4>
         <p class="leader-card__role">Member Advisory</p>
         <p class="leader-card__expertise">International Ocean Affairs</p>
       </article>
+
+      <!-- Juan Osuna -->
       <article class="leader-card">
         <div class="leader-card__avatar">
-          <span class="leader-card__initials">JO</span>
+          <img src="{% static 'images/Juan.jpeg' %}" alt="Juan Osuna" class="leader-card__image">
         </div>
         <h4 class="leader-card__name">Juan Osuna</h4>
         <p class="leader-card__role">Member Advisory</p>
         <p class="leader-card__expertise">Electronics Engineering, Installation and Programming</p>
       </article>
+
     </div>
   </div>
 </section>
@@ -242,11 +253,66 @@
     {% for i in projects %}
     <article class="project-card">
       <div class="project-card__icon" aria-hidden="true">✓</div>
-      <h3 class="project-card__title">{{i.name}}</h3>
-        <p class="project-card__description">{{i.description}}</p> 
-        <a class="project-card__cta" href="{% url 'donations:donation' i.id %}">Donate</a>       
+      <h3 class="project-card__title">{{ i.name }}</h3>
+      <p class="project-card__description">{{ i.description }}</p>
+      <a class="project-card__cta" href="{% url 'donations:donation' i.id %}">Donate</a>
     </article>
+    {% empty %}
+    <p>No projects found.</p>
     {% endfor %}
+  </div>
+</section>
+
+<section id="contact" class="contact" aria-labelledby="contact-heading">
+  <div class="contact__container">
+    <div>
+      <h2 id="contact-heading" class="section-heading">Contact Ceanapse</h2>
+      <p class="contact__intro">
+        Partner with us, learn more about ongoing initiatives, or share opportunities that can strengthen blue economy stewardship across East Africa.
+      </p>
+    </div>
+    <div class="contact__grid">
+      <article class="contact-card">
+        <h3 class="contact-card__title">Talk to the Team</h3>
+        <p class="contact-card__text">
+          We happily connect with philanthropists, volunteers, faith communities, and research partners.
+        </p>
+        <div class="contact__details">
+          <div class="contact__detail">
+            <span class="contact__label">Email</span>
+            <span class="contact__value">hello@ceanapse.org</span>
+          </div>
+          <div class="contact__detail">
+            <span class="contact__label">Phone</span>
+            <span class="contact__value">+254 700 555 123</span>
+          </div>
+        </div>
+        <div class="contact__actions">
+          <a href="mailto:hello@ceanapse.org" class="contact__action">Send an Email</a>
+          <a href="tel:+254700555123" class="contact__action">Call / WhatsApp</a>
+        </div>
+      </article>
+      <article class="contact-card">
+        <h3 class="contact-card__title">Visit or Write to Us</h3>
+        <p class="contact-card__text">
+          Our Nairobi hub anchors program design, while field teams operate on Kenya’s coast and Lake Victoria basin.
+        </p>
+        <div class="contact__details">
+          <div class="contact__detail">
+            <span class="contact__label">Office</span>
+            <span class="contact__value">Nairobi, Kenya</span>
+          </div>
+          <div class="contact__detail">
+            <span class="contact__label">Hours</span>
+            <span class="contact__value">Mon – Fri · 9:00 AM – 5:00 PM EAT</span>
+          </div>
+        </div>
+        <div class="contact__actions">
+          <a href="mailto:hello@ceanapse.org?subject=Schedule%20a%20visit" class="contact__action">Schedule a Visit</a>
+          <a href="{% url 'projects:ceanapse-home' %}#projects" class="contact__action">Explore Programs</a>
+        </div>
+      </article>
+    </div>
   </div>
 </section>
 {% endblock %}

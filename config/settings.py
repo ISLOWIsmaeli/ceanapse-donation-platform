@@ -37,6 +37,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 INSTALLED_APPS = [
     "django.contrib.admin",
+    "django.contrib.humanize",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -63,7 +64,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "config/templates"],
+        "DIRS": [BASE_DIR / "config/templates"], 
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -126,8 +127,14 @@ USE_TZ = False
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
+# Donation constraints
+DONATION_MIN_AMOUNT = 100  # KES
+DONATION_MAX_AMOUNT = 1000000  # KES
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY')
+PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY', default='')
+
+
