@@ -5,52 +5,52 @@
 {% block content %}
 <section class="donation-section">
   <div class="donation-container">
+
+    <!-- Header -->
     <div class="donation-header">
-      <h1 class="donation-title">Make a Donation Towards </h1>
+      <h1 class="donation-title">Make a Donation Towards</h1>
       <p class="donation-subtitle">{{ project.name }}</p>
       <p class="donation-subtitle">Support ocean conservation and make a difference today.</p>
     </div>
 
+    <!-- Errors -->
     {% if messages %}
       {% for message in messages %}
         {% if message.tags == 'error' %}
-          <p style="color:firebrick;">{{ message }}</p>
+          <p class="form-error-global">{{ message }}</p>
         {% endif %}
       {% endfor %}
     {% endif %}
 
-    {% if not request.user.is_authenticated %}
-      <div class="guest-login-prompt">
-        <p>You are not logged in. Would you like to log in or continue as a guest?</p>
-        <a href="#" class="btn btn--primary">Log In</a>
-        <a href="#" class="btn btn--secondary">Continue as Guest</a>
-      </div>
-    {% endif %}
-
     <div class="project-container">
       <div class="projects">
-        <p>{{ project.name }}</p>
-        <p>Description: {{ project.description }}</p>
 
+        <!-- Summary -->
+        <p class="project-name">{{ project.name }}</p>
+        <p class="project-description">{{ project.description }}</p>
+
+        <!-- Donation form -->
         <form class="donation-form" id="donation-form" method="post"
               action="{% url 'donations:donation-checkout' project.id %}">
           {% csrf_token %}
 
+          <!-- Donation amount -->
           <div class="form-group">
-            <label for="amount" class="form-label">Donation Amount <span class="required">*</span></label>
+            <label class="form-label">Donation Amount <span class="required">*</span></label>
+
             <div class="amount-input-wrapper">
               <span class="amount-currency">KES</span>
-              <input type="number" id="amount" name="amount"
-                     class="form-input form-input--amount"
+              <input type="number" id="amount" name="amount" class="form-input form-input--amount"
                      placeholder="KES {{ min_amount|floatformat:'0' }} – {{ max_amount|floatformat:'0' }}"
                      step="0.01" min="{{ min_amount }}" max="{{ max_amount }}" required />
             </div>
+
             <p class="input-hint">
-              Minimum donation: KES {{ min_amount|floatformat:"0" }} · Maximum donation: KES {{ max_amount|floatformat:"0" }}
+              Minimum: KES {{ min_amount|floatformat:"0" }} · Maximum: KES {{ max_amount|floatformat:"0" }}
             </p>
-            <span class="form-error" id="amount-error"></span>
           </div>
 
+          <!-- Quick amounts -->
           <div class="amount-suggestions">
             <button type="button" class="amount-btn" data-amount="500">KES 500</button>
             <button type="button" class="amount-btn" data-amount="1000">KES 1,000</button>
@@ -58,66 +58,100 @@
             <button type="button" class="amount-btn" data-amount="10000">KES 10,000</button>
           </div>
 
+          <!-- Donation preference -->
           <div class="form-group">
             <span class="form-label">Donation Preference</span>
-            <div class="choice-group" role="radiogroup" aria-label="Donation preference">
+
+            <div class="choice-group">
               <label class="choice-pill">
                 <input type="radio" name="is_anonymous" value="false" checked />
                 <span>Show my name</span>
               </label>
+
               <label class="choice-pill">
                 <input type="radio" name="is_anonymous" value="true" />
                 <span>Give anonymously</span>
               </label>
             </div>
-            <p class="input-hint">
-              Anonymous donations hide your name on acknowledgements, but you’ll still receive receipts via email.
-            </p>
           </div>
 
+          <!-- Donor info panel (controlled by JS) -->
+          <div id="donor-info-panel">
+
+            <!-- Email (shown in BOTH modes) -->
+            <div class="form-group" id="email-group">
+              <label class="form-label">Email <span class="required">*</span></label>
+              <input type="email" name="donor_email" class="form-input" required placeholder="you@example.com">
+            </div>
+
+            <!-- Show-name only fields -->
+            <div id="show-name-fields">
+
+              <div class="form-group">
+                <label class="form-label">First Name <span class="required">*</span></label>
+                <input type="text" name="first_name" class="form-input" placeholder="John">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Last Name <span class="required">*</span></label>
+                <input type="text" name="last_name" class="form-input" placeholder="Doe">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="text" name="phone" class="form-input" placeholder="+2547XXXXXXXX">
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Actions -->
           <div class="form-actions">
             <button type="submit" class="btn btn--primary" id="submit-btn">
               <span class="btn-text">Proceed to Donate</span>
-              <span class="btn-loader" id="btn-loader" style="display: none;">
+              <span class="btn-loader" id="btn-loader" style="display:none;">
                 <span class="loader"></span>
               </span>
             </button>
+
             <a href="{% url 'projects:ceanapse-home' %}" class="btn btn--secondary">Cancel</a>
           </div>
+
         </form>
       </div>
     </div>
+
   </div>
 </section>
 {% endblock %}
 
 {% block extra_scripts %}
 <script>
-  // Amount suggestion buttons
+  // Quick amount buttons
   document.querySelectorAll('.amount-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const amount = this.getAttribute('data-amount');
-      document.getElementById('amount').value = amount;
-
+    btn.addEventListener('click', () => {
+      document.getElementById('amount').value = btn.dataset.amount;
       document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
-      this.classList.add('active');
+      btn.classList.add('active');
     });
   });
 
-  // Helper: get CSRF token
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
+  // Toggle donor fields
+  const anonRadios = document.querySelectorAll("input[name='is_anonymous']");
+  const showNameFields = document.getElementById("show-name-fields");
+
+  function updateFields() {
+    const isAnon = document.querySelector("input[name='is_anonymous']:checked").value === "true";
+
+    if (isAnon) {
+      showNameFields.style.display = "none";  // Hide first/last/phone
+    } else {
+      showNameFields.style.display = "block"; // Show them
     }
-    return cookieValue;
   }
+
+  anonRadios.forEach(r => r.addEventListener("change", updateFields));
+  updateFields(); // Initialize on page load
 </script>
 {% endblock %}
