@@ -135,6 +135,10 @@ DONATION_MAX_AMOUNT = 1000000  # KES
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-PAYSTACK_SECRET_KEY = config('PAYSTACK_SECRET_KEY', default='')
+PAYSTACK_TEST_SECRET_KEY = config('PAYSTACK_TEST_SECRET_KEY')
+PAYSTACK_TEST_PUBLIC_KEY = config('PAYSTACK_TEST_PUBLIC_KEY')
+PAYSTACK_LIVE_SECRET_KEY = config('PAYSTACK_LIVE_SECRET_KEY')
+PAYSTACK_LIVE_PUBLIC_KEY = config('PAYSTACK_LIVE_PUBLIC_KEY')
+PAYSTACK_INITIALIZE_PAYMENT_URL = config('PAYSTACK_INITIALIZE_PAYMENT_URL', default='https://api.paystack.co/transaction/initialize')
 
 

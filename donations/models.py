@@ -3,14 +3,31 @@ import uuid
 from projects.models import Project
 from django.contrib.auth.models import User
 
+
+
 class DonationHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    donation_id = models.CharField(max_length=225, default=uuid.uuid4, editable=False)
+    email = models.EmailField(max_length=254, default='noemail@example.com')
+    first_name = models.CharField(max_length=150, default='Anonymous', null=True, blank=True)
+    last_name = models.CharField(max_length=150, default='User', null=True, blank=True)
+    donation_id = models.CharField(max_length=225, default=uuid.uuid4())
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     donation_status = models.BooleanField(default=False)
-    is_anonymous = models.BooleanField(default=False)
-    email = models.EmailField(max_length=255, null=True, blank=True)  # new field
-    status = models.CharField(max_length=50, default="pending")       # new field
-    reference = models.CharField(max_length=255, null=True, blank=True) # new field
     date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.donation_id
+
+class PaystackDonation(models.Model):
+    donation_history=models.ForeignKey(DonationHistory, null=True, blank=True, on_delete=models.SET_NULL)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    email = models.EmailField(max_length=254, default='noemail@example.com')
+    first_name = models.CharField(max_length=150, default='Anonymous', null=True, blank=True)
+    last_name = models.CharField(max_length=150, default='User', null=True, blank=True)
+    initialize_response=models.JSONField(null=True,blank=True,default=dict)
+    call_back_response=models.JSONField(null=True,blank=True,default=dict)
+    donation_id = models.CharField(max_length=225, default=uuid.uuid4())
+    amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    is_success = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at=models.DateTimeField(null=True,blank=True, default=None)

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Donations Checkout | Ceanapse{% endblock %}
+{% block title %}Checkout{% endblock %}
 
 {% block content %}
 <section class="donation-section">
@@ -8,9 +8,8 @@
 
     <!-- Header -->
     <div class="donation-header">
-      <h1 class="donation-title">Make a Donation Towards</h1>
-      <p class="donation-subtitle">{{ project.name }}</p>
-      <p class="donation-subtitle">Support ocean conservation and make a difference today.</p>
+      <h1 class="donation-title"> {{ project.name }} Donation</h1>
+      <p class="donation-subtitle">Support ocean conservation and make a difference today!</p>
     </div>
 
     <!-- Errors -->
@@ -26,13 +25,39 @@
       <div class="projects">
 
         <!-- Summary -->
-        <p class="project-name">{{ project.name }}</p>
-        <p class="project-description">{{ project.description }}</p>
+        {% comment %} <p class="project-name">{{ project.name }}</p>
+        <p class="project-description">{{ project.description }}</p> {% endcomment %}
 
         <!-- Donation form -->
         <form class="donation-form" id="donation-form" method="post"
               action="{% url 'donations:donation-checkout' project.id %}">
           {% csrf_token %}
+
+          <!-- Donor info panel (controlled by JS) -->
+          <div id="donor-info-panel">
+
+            <!-- Email (shown in BOTH modes) -->
+            <div class="form-group" id="email-group">
+              <label class="form-label">Email <span class="required">*</span></label>
+              <input type="email" name="donor_email" class="form-input" required placeholder="you@example.com">
+            </div>
+
+            <!-- Show-name only fields -->
+            <div id="show-name-fields">
+
+              <div class="form-group">
+                <label class="form-label">First Name <span class="required">*</span></label>
+                <input type="text" name="first_name" class="form-input" placeholder="Enter First Name">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Last Name <span class="required">*</span></label>
+                <input type="text" name="last_name" class="form-input" placeholder="Enter last name">
+              </div>
+
+            </div>
+
+          </div>
 
           <!-- Donation amount -->
           <div class="form-group">
@@ -42,7 +67,7 @@
               <span class="amount-currency">KES</span>
               <input type="number" id="amount" name="amount" class="form-input form-input--amount"
                      placeholder="KES {{ min_amount|floatformat:'0' }} – {{ max_amount|floatformat:'0' }}"
-                     step="0.01" min="{{ min_amount }}" max="{{ max_amount }}" required />
+                     step="10" min="{{ min_amount }}" max="{{ max_amount }}" required />
             </div>
 
             <p class="input-hint">
@@ -75,36 +100,7 @@
             </div>
           </div>
 
-          <!-- Donor info panel (controlled by JS) -->
-          <div id="donor-info-panel">
-
-            <!-- Email (shown in BOTH modes) -->
-            <div class="form-group" id="email-group">
-              <label class="form-label">Email <span class="required">*</span></label>
-              <input type="email" name="donor_email" class="form-input" required placeholder="you@example.com">
-            </div>
-
-            <!-- Show-name only fields -->
-            <div id="show-name-fields">
-
-              <div class="form-group">
-                <label class="form-label">First Name <span class="required">*</span></label>
-                <input type="text" name="first_name" class="form-input" placeholder="John">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Last Name <span class="required">*</span></label>
-                <input type="text" name="last_name" class="form-input" placeholder="Doe">
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">Phone Number</label>
-                <input type="text" name="phone" class="form-input" placeholder="+2547XXXXXXXX">
-              </div>
-
-            </div>
-
-          </div>
+          
 
           <!-- Actions -->
           <div class="form-actions">
@@ -145,7 +141,7 @@
     const isAnon = document.querySelector("input[name='is_anonymous']:checked").value === "true";
 
     if (isAnon) {
-      showNameFields.style.display = "none";  // Hide first/last/phone
+      showNameFields.style.display = "none";  // Hide first/last/
     } else {
       showNameFields.style.display = "block"; // Show them
     }

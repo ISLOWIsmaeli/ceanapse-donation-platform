@@ -3,19 +3,18 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 import uuid
+from django.utils import timezone
 from django.shortcuts import get_object_or_404
-from .models import DonationHistory
+from .models import DonationHistory, PaystackDonation
 from django.urls import reverse
 from django.contrib import messages
 from .paystack import checkout
 from projects.models import Project
-from .models import DonationHistory
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import hmac
 import hashlib
 import json
-from django.contrib.auth.models import User
 from decimal import Decimal, InvalidOperation
 from django.conf import settings
 
@@ -35,31 +34,31 @@ def donation_checkout(request, donation_id):
   }
   return render(request, "donations/donation_checkout_form.html", context)
 
-@login_required # I propose donation success to be for everyone and we filter it at the templates level
 def donation_success(request, project_id):
+    project = Project.objects.get(id=project_id)
+    # print(f"User: {request.user}, Project: {project}")
 
-  project = Project.objects.get(id=project_id)
-  
-  # Get the most recent successful donation for this user and project
-  donation = DonationHistory.objects.filter(
-      user=request.user,
-      project=project,
-      donation_status=True
-  ).order_by('-date').first()
-  
-  amount = donation.amount if donation else None
-  donation_id = donation.donation_id if donation else None
-  is_anonymous = donation.is_anonymous if donation else False
-  donor_name = None if is_anonymous else (request.user.get_full_name() or request.user.username)
+    # Get the most recent successful donation for this user and project
+    donation = DonationHistory.objects.filter(
+        project=project,
+        donation_status=True
+    ).order_by('-date').first()
 
-  return render(request, 'donations/donation_success.html', {
-      'project': project,
-      'amount': amount,
-      'donation_id': donation_id,
-      'donor_name': donor_name,
-      'is_anonymous': is_anonymous,
-  })
+    if donation:
+        amount = donation.amount
+        email = donation.email
+        first_name =donation.first_name
+        last_name = donation.last_name
+    else:
+        None
 
+    return render(request, 'donations/donation_success.html', {
+        'project': project,
+        'email' : email,
+        'amount': amount,
+        'first_name': first_name,
+        'last_name': last_name
+    })
 # no need to login 
 def donation_failed(request, project_id):
 
@@ -67,89 +66,80 @@ def donation_failed(request, project_id):
     
   # Get the most recent failed donation for this user and project (optional)
   donation = DonationHistory.objects.filter(
-      user=request.user,
       project=project,
       donation_status=False
   ).order_by('-date').first()
   
-  amount = donation.amount if donation else None
-  donation_id = donation.donation_id if donation else None
   
   return render(request, 'donations/donation_failed.html', {
       'project': project,
-      'amount': amount,
-      'donation_id': donation_id
+      'donation_id': donation.donation_id
   })
 
 
 def create_paystack_checkout_session(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    amount = int(request.POST.get("amount", 0))
-    is_anonymous = request.POST.get("is_anonymous") == "true"
+    project = Project.objects.get(id=project_id)
 
-    donation = DonationHistory.objects.create(
-        project=project,
-        user=request.user if request.user.is_authenticated else None,
-        email=request.user.email if request.user.is_authenticated else request.POST.get("donor_email"),
-        amount=amount,
-        is_anonymous=is_anonymous,
-        status="pending",
-        reference=str(uuid.uuid4()),
-    )
+    if request.method == "POST":
+        email_text = request.POST.get("donor_email")
+        amount_text = request.POST.get("amount")
+        first_name_text = request.POST.get("first_name")
+        last_name_text = request.POST.get("last_name")
+        try:
+            amount = Decimal(amount_text)
+        except (InvalidOperation, TypeError):
+            messages.error(request, "Enter a valid numeric amount.")
+            return redirect('donation', donation_id=project_id)
 
-    # define required variables
-    email = donation.email
-    amount_kobo = int(donation.amount * 100)
-    purchase_id = donation.reference
-    callback_url = request.build_absolute_uri("/donations/callback/")
+        # validate min/max
+        if amount <= 0:
+            messages.error(request, "Amount must be greater than zero.")
+            return redirect('donations:donation', donation_id=project_id)
+        
+        donation_id = f"donation_{uuid.uuid4()}"
+        # /payment-success/2/
+        # payment_success_url = reverse('donations:donation-success', kwargs={'project_id': project_id})
+        # http://domain.com/payment-success/2/ 
+        # callback_url = f"{request.scheme}://{request.get_host()}{payment_success_url}"
+        # Paystack expects amount in kobo (or cents) as integer
+        amount_in_kobo = int(amount * 100)
 
-    first_name = request.POST.get("first_name", "")
-    last_name = request.POST.get("last_name", "")
-    phone = request.POST.get("phone", "")
-
-    checkout_data = {
-        "email": email,
-        "amount": amount_kobo,
+        checkout_data = {
+        "email": email_text,
+        "amount": amount_in_kobo,  # in kobo 
         "currency": "KES",
-        "reference": purchase_id,
-        "callback_url": callback_url,
-        "metadata": {
-            "purchase_id": purchase_id,
-            "project_id": project.id,
-            "is_anonymous": is_anonymous,
-            "donor_email": email,
-            "user_id": request.user.id if request.user.is_authenticated else None,
+        "channels": ["card", "bank_transfer", "bank", "ussd", "qr", "mobile_money"],
+        "reference": donation_id, # generated by developer
+        # "callback_url": callback_url,
+        "label": f"Checkout For {project.name}"
         }
-    }
+        print("The checkout data payload sent to paystack is as follows:")
+        print(checkout_data)
+        print("End of paystack checkout data sent")
 
-    if not is_anonymous:
-        checkout_data["metadata"].update({
-            "first_name": first_name,
-            "last_name": last_name,
-            "phone": phone,
-        })
+        status, check_out_session_url_or_error_message, response_data = checkout(checkout_data)
+        PaystackDonation.objects.create(
+            email = email_text,
+            amount = amount_text,
+            first_name = first_name_text,
+            last_name = last_name_text,
+            initialize_response = response_data,
+            donation_id = donation_id,
+            project_id = project_id
 
-    headers = {
-        "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
-        "Content-Type": "application/json",
-    }
+        )
 
-    response = requests.post(
-        "https://api.paystack.co/transaction/initialize",
-        json=checkout_data,
-        headers=headers
-    )
-
-    res_data = response.json()
-
-    if not res_data.get("status"):
-        return JsonResponse({"error": "Payment initialization failed.", "details": res_data}, status=400)
-
-    return redirect(res_data["data"]["authorization_url"])
+        if status:
+            return redirect(check_out_session_url_or_error_message)
+        else:
+            messages.error(request, check_out_session_url_or_error_message)
+            return redirect('donations:donation',donation_id=project_id)
+    # GET: render form to enter amount
+    return render(request, 'donations/donation_checkout_form.html', {'project': project})
 
 @csrf_exempt
 def paystack_webhook(request):
-    secret = settings.PAYSTACK_SECRET_KEY
+    secret = settings.PAYSTACK_TEST_SECRET_KEY
     request_body = request.body
     
     hash = hmac.new(secret.encode('utf-8'), request_body, hashlib.sha512).hexdigest()
@@ -158,29 +148,38 @@ def paystack_webhook(request):
         webhook_post_data = json.loads(request_body)
        
         if webhook_post_data["event"] == "charge.success":
-            metadata = webhook_post_data["data"]["metadata"]
-            data = webhook_post_data["data"]
-            product_id = metadata["product_id"]
-            user_id = metadata["user_id"]
-            purchase_id = metadata["purchase_id"]
+           
+            data = webhook_post_data["data"]            
+            donation_id = data.get("reference")
 
             amount_paid_kobo = data.get("amount")
             amount_paid = Decimal(amount_paid_kobo) / 100
 
-            user = User.objects.get(id=user_id)
-
-            is_anonymous = metadata.get("is_anonymous", False)
-            if isinstance(is_anonymous, str):
-                is_anonymous = is_anonymous.lower() == "true"
-
-            DonationHistory.objects.create(
-                donation_id = purchase_id,
-                user = user,
-                donation_status = True,
-                project = Project.objects.get(id=product_id),
+            paystack_donation = PaystackDonation.objects.select_related("project").filter(
+                donation_id = donation_id,
                 amount = amount_paid,
-                is_anonymous = is_anonymous
+                is_success = False
+            ).first()
+
+            if not paystack_donation:
+                print("Recieved invalid data")
+                return HttpResponse(status=200)
+            
+
+            donation_history=DonationHistory.objects.create(
+                donation_id = paystack_donation.donation_id,
+                email = paystack_donation.email,
+                donation_status = True,
+                project = paystack_donation.project,
+                amount = amount_paid,
+                first_name = paystack_donation.first_name,
+                last_name = paystack_donation.last_name
             )
+            paystack_donation.donation_history  = donation_history
+            paystack_donation.call_back_response=webhook_post_data
+            paystack_donation.completed_at=timezone.now()
+            paystack_donation.is_success=True
+            paystack_donation.save()
 
             #send email to user on successful payment
             # send_payment_success_email(user.email, product_id)
