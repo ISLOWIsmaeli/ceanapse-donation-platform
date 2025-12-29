@@ -66,8 +66,8 @@
             <div class="amount-input-wrapper">
               <span class="amount-currency">KES</span>
               <input type="number" id="amount" name="amount" class="form-input form-input--amount"
-                     placeholder="KES {{ min_amount|floatformat:'0' }} – {{ max_amount|floatformat:'0' }}"
-                     step="10" min="{{ min_amount }}" max="{{ max_amount }}" required />
+                     placeholder="KES {{ 1|floatformat:'0' }} – {{ max_amount|floatformat:'0' }}"
+                     step="1" min="{{ 1 }}" max="{{ max_amount }}" required />
             </div>
 
             <p class="input-hint">

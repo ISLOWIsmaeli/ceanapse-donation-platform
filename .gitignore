@@ -20,6 +20,8 @@ db.sqlite3-journal
 /staticfiles
 .env
 .env.local
+db.json
+grant_permissions.sql
 
 # IDE
 .vscode/

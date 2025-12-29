@@ -20,7 +20,7 @@ from django.conf import settings
 
 
 def _donation_limits():
-  min_amount = Decimal(str(getattr(settings, "DONATION_MIN_AMOUNT", 100)))
+  min_amount = Decimal(str(getattr(settings, "DONATION_MIN_AMOUNT", 1)))
   max_amount = Decimal(str(getattr(settings, "DONATION_MAX_AMOUNT", 1000000)))
   return min_amount, max_amount
 
