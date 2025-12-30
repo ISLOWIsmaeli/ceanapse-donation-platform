@@ -16,10 +16,10 @@
       <h1 class="response-title">Thank You!</h1>
       <p class="response-subtitle">Your donation has been received successfully</p>
       
-      {% if donor_name %}
-        <p class="response-greeting">Dear {{ donor_name }},</p>
+      {% if first_name or last_name %}
+        <p class="response-greeting">Dear {{ first_name }}, {{ last_name }}</p>
       {% else %}
-        <p class="response-greeting">Dear User,</p>
+        <p class="response-greeting">Dear Donor,</p>
       {% endif %}
       
       <p class="response-message">
@@ -27,20 +27,28 @@
         marine conservation efforts. We truly appreciate your support!
       </p>
       
-      {% if donation_id %}
+      {% if project %}
       <div class="response-details">
         <div class="response-detail">
-          <span class="response-detail-label">Transaction Reference:</span>
-          <span class="response-detail-value">{{ donation_id }}</span>
+          <span class="response-detail-label">Email :</span>
+          <span class="response-detail-value">{{ email }}</span>
         </div>
-        {% if amount %}
+      {% if donation_id %}
         <div class="response-detail">
-          <span class="response-detail-label">Amount:</span>
+          <span class="response-detail-label">Transaction Reference:</span>
+          <span class="#">{{ donation_id }}</span>
+        </div>
+      {% if amount %}
+        <div class="response-detail">
+          <span class="response-detail-label">Amount Donated:</span>
           <span class="response-detail-value">KES {{ amount }}</span>
         </div>
-        {% endif %}
+      {% endif %}
+      
+      {% endif %}
       </div>
       {% endif %}
+      
       
       <div class="response-actions">
         <a href="{% url 'projects:ceanapse-home' %}" class="btn btn--primary">
