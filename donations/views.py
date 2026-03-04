@@ -47,9 +47,10 @@ def donation_success(request, project_id):
     if donation:
         amount = donation.amount
         email = donation.email
+        donation_id = donation.donation_id
         first_name =donation.first_name
         last_name = donation.last_name
-        donation_id = donation.donation_id
+        print(f"{first_name} and {last_name}")
     else:
         None
 
